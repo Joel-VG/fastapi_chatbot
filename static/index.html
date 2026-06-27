@@ -1,306 +1,710 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Groq AI Assistant</title>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            background: linear-gradient(135deg, #0f172a, #1e293b, #111827);
-            transition: 0.3s;
+        body{
+            height:100vh;
+            display:flex;
+            background:linear-gradient(135deg,#0f172a,#1e293b,#111827);
+            transition:.3s;
         }
 
-        .sidebar {
-            width: 280px;
-            background: rgba(15, 23, 42, 0.9);
-            color: white;
-            padding: 20px;
-            overflow-y: auto;
-            transition: 0.3s;
+        /* =========================
+              SIDEBAR
+        ==========================*/
+
+        .sidebar{
+            width:280px;
+            background:rgba(15,23,42,.92);
+            color:white;
+            display:flex;
+            flex-direction:column;
+            padding:20px;
+            transition:.3s;
         }
 
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 20px;
+        .logo{
+            text-align:center;
+            font-size:28px;
+            font-weight:bold;
+            margin-bottom:20px;
         }
 
-        .new-chat {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #4f46e5, #06b6d4);
-            color: white;
-            cursor: pointer;
-            margin-bottom: 20px;
+        .sidebar button{
+            width:100%;
+            margin-bottom:12px;
+            padding:14px;
+            border:none;
+            border-radius:12px;
+            cursor:pointer;
+            color:white;
+            font-size:15px;
+            transition:.3s;
         }
 
-        .history-item {
-            background: rgba(255,255,255,0.08);
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            word-wrap: break-word;
+        .new-chat{
+            background:linear-gradient(135deg,#4f46e5,#06b6d4);
         }
 
-        .history-item:hover {
-            background: rgba(255,255,255,0.18);
+        .clear-chat{
+            background:#dc2626;
         }
 
-        .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+        .clear-chat:hover{
+            background:#b91c1c;
         }
 
-        .header {
-            color: white;
-            text-align: center;
-            padding: 25px;
-            font-size: 28px;
-            font-weight: bold;
-            transition: 0.3s;
+        #chat-history{
+            margin-top:10px;
+            overflow-y:auto;
+            flex:1;
         }
 
-        #chat-box {
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px;
+        .history-item{
+            background:rgba(255,255,255,.08);
+            margin-bottom:10px;
+            padding:12px;
+            border-radius:10px;
+            cursor:pointer;
+            transition:.3s;
+            word-break:break-word;
         }
 
-        .message {
-            max-width: 75%;
-            margin-bottom: 20px;
-            padding: 18px;
-            border-radius: 18px;
-            line-height: 1.6;
+        .history-item:hover{
+            background:rgba(255,255,255,.18);
         }
 
-        .user {
-            margin-left: auto;
-            color: white;
-            background: linear-gradient(135deg, #2563eb, #06b6d4);
+        /* =========================
+              CHAT AREA
+        ==========================*/
+
+        .chat-area{
+            flex:1;
+            display:flex;
+            flex-direction:column;
         }
 
-        .bot {
-            color: white;
-            background: rgba(255,255,255,0.1);
-            transition: 0.3s;
+        .header{
+            text-align:center;
+            color:white;
+            font-size:30px;
+            font-weight:bold;
+            padding:25px;
+            transition:.3s;
         }
 
-        .input-wrapper {
-            padding: 25px;
+        #chat-box{
+            flex:1;
+            overflow-y:auto;
+            padding:30px;
         }
 
-        .input-box {
-            display: flex;
-            background: rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 12px;
-            transition: 0.3s;
+        .welcome{
+            margin-top:120px;
+            text-align:center;
+            color:#cbd5e1;
+            font-size:26px;
         }
 
-        #prompt {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 16px;
-            outline: none;
-            padding: 12px;
-            transition: 0.3s;
+        /* =========================
+             MESSAGE BUBBLES
+        ==========================*/
+
+        .message{
+            max-width:75%;
+            padding:16px;
+            margin-bottom:20px;
+            border-radius:18px;
+            animation:fade .25s ease;
+            line-height:1.6;
+            position:relative;
         }
 
-        .send-btn {
-            border: none;
-            padding: 14px 22px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #4f46e5, #06b6d4);
-            color: white;
-            cursor: pointer;
+        @keyframes fade{
+            from{
+                opacity:0;
+                transform:translateY(10px);
+            }
+            to{
+                opacity:1;
+                transform:translateY(0);
+            }
         }
 
-        .welcome {
-            text-align: center;
-            color: #cbd5e1;
-            margin-top: 120px;
-            font-size: 24px;
-            transition: 0.3s;
+        .user{
+            margin-left:auto;
+            color:white;
+            background:linear-gradient(135deg,#2563eb,#06b6d4);
         }
 
-        /* LIGHT MODE */
-        body.light {
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        .bot{
+            color:white;
+            background:rgba(255,255,255,.08);
         }
 
-        body.light .sidebar {
-            background: rgba(255,255,255,0.95);
-            color: black;
+        .time{
+            margin-top:8px;
+            font-size:11px;
+            opacity:.7;
+            text-align:right;
         }
 
-        body.light .header {
-            color: black;
+        .copy-btn{
+            margin-top:10px;
+            border:none;
+            background:#2563eb;
+            color:white;
+            padding:6px 10px;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:12px;
         }
 
-        body.light .welcome {
-            color: #334155;
+        .copy-btn:hover{
+            background:#1d4ed8;
         }
 
-        body.light .history-item {
-            background: rgba(0,0,0,0.08);
-            color: black;
+        /* =========================
+              INPUT AREA
+        ==========================*/
+
+        .input-wrapper{
+            padding:20px;
         }
 
-        body.light .history-item:hover {
-            background: rgba(0,0,0,0.15);
+        .input-box{
+            display:flex;
+            align-items:center;
+            background:rgba(255,255,255,.08);
+            border-radius:18px;
+            padding:12px;
         }
 
-        body.light .input-box {
-            background: rgba(0,0,0,0.08);
+        #prompt{
+            flex:1;
+            background:transparent;
+            border:none;
+            outline:none;
+            color:white;
+            font-size:16px;
+            resize:none;
+            padding:10px;
         }
 
-        body.light #prompt {
-            color: black;
+        .send-btn{
+            border:none;
+            padding:14px 22px;
+            border-radius:12px;
+            cursor:pointer;
+            color:white;
+            background:linear-gradient(135deg,#4f46e5,#06b6d4);
         }
 
-        body.light .bot {
-            background: rgba(0,0,0,0.08);
-            color: black;
+        /* =========================
+              LIGHT MODE
+        ==========================*/
+
+        body.light{
+            background:linear-gradient(135deg,#f8fafc,#e2e8f0);
         }
+
+        body.light .sidebar{
+            background:white;
+            color:black;
+        }
+
+        body.light .header{
+            color:black;
+        }
+
+        body.light .history-item{
+            background:#ececec;
+            color:black;
+        }
+
+        body.light .history-item:hover{
+            background:#d6d6d6;
+        }
+
+        body.light .welcome{
+            color:#475569;
+        }
+
+        body.light .input-box{
+            background:#e8e8e8;
+        }
+
+        body.light #prompt{
+            color:black;
+        }
+
+        body.light .bot{
+            color:black;
+            background:#ececec;
+        }
+
+        /* =========================
+             RESPONSIVE
+        ==========================*/
+
+        @media(max-width:800px){
+
+            .sidebar{
+                width:220px;
+            }
+
+            .message{
+                max-width:90%;
+            }
+
+            .header{
+                font-size:24px;
+            }
+
+        }
+
     </style>
+
 </head>
+
 <body>
 
 <div class="sidebar">
+
     <div class="logo">🤖 Groq AI</div>
-    <button id="themeToggle" class="new-chat">☀️ Light Mode</button>
-    <button class="new-chat" onclick="newChat()">+ New Chat</button>
+
+    <button id="themeToggle" class="new-chat">
+        ☀️ Light Mode
+    </button>
+
+    <button class="new-chat" onclick="newChat()">
+        + New Chat
+    </button>
+
+    <button class="clear-chat" onclick="clearAllChats()">
+        🗑 Clear Chats
+    </button>
+
     <div id="chat-history"></div>
+
 </div>
 
 <div class="chat-area">
-    <div class="header">AI Assistant</div>
+
+    <div class="header">
+        AI Assistant
+    </div>
 
     <div id="chat-box">
-        <div class="welcome">Ask me anything ✨</div>
+
+        <div class="welcome">
+            Ask me anything ✨
+        </div>
+
     </div>
 
     <div class="input-wrapper">
+
         <div class="input-box">
-            <input id="prompt" placeholder="Message AI..." />
-            <button class="send-btn" onclick="generate()">Send</button>
+
+            <textarea
+                id="prompt"
+                rows="1"
+                placeholder="Message AI..."></textarea>
+
+            <button
+                class="send-btn"
+                onclick="generate()">
+                Send
+            </button>
+
         </div>
+
     </div>
+
 </div>
 
 <script>
 let chats = JSON.parse(localStorage.getItem("groqChats")) || [];
 let currentChat = [];
 
-function saveChats() {
-    localStorage.setItem("groqChats", JSON.stringify(chats));
-}
-
-function renderHistory() {
-    const history = document.getElementById("chat-history");
-    history.innerHTML = "";
-
-    chats.forEach((chat, index) => {
-        const item = document.createElement("div");
-        item.className = "history-item";
-        item.innerText = chat.title;
-        item.onclick = () => loadChat(index);
-        history.appendChild(item);
-    });
-}
-
-function loadChat(index) {
-    currentChat = chats[index].messages;
-    const chatBox = document.getElementById("chat-box");
-    chatBox.innerHTML = "";
-
-    currentChat.forEach(msg => {
-        chatBox.innerHTML += `<div class="message ${msg.role}">${msg.text}</div>`;
-    });
-}
-
-function newChat() {
-    currentChat = [];
-    document.getElementById("chat-box").innerHTML =
-        '<div class="welcome">Ask me anything ✨</div>';
-}
-
-async function generate() {
-    const input = document.getElementById("prompt");
-    const prompt = input.value;
-    const chatBox = document.getElementById("chat-box");
-
-    if (!prompt.trim()) return;
-
-    if (chatBox.innerHTML.includes("Ask me anything")) {
-        chatBox.innerHTML = "";
-    }
-
-    chatBox.innerHTML += `<div class="message user">${prompt}</div>`;
-    currentChat.push({ role: "user", text: prompt });
-    input.value = "";
-
-    chatBox.innerHTML += `<div class="message bot" id="loading">Thinking...</div>`;
-
-    const response = await fetch("http://127.0.0.1:8000/generate", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ prompt: prompt })
-    });
-
-    const data = await response.json();
-
-    document.getElementById("loading").remove();
-    chatBox.innerHTML += `<div class="message bot">${data.response}</div>`;
-    currentChat.push({ role: "bot", text: data.response });
-
-    if (currentChat.length === 2) {
-        chats.push({
-            title: prompt.substring(0, 25) + "...",
-            messages: [...currentChat]
-        });
-    } else {
-        chats[chats.length - 1].messages = [...currentChat];
-    }
-
-    saveChats();
-    renderHistory();
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
+// ----------------------------
+// Save & Load Theme
+// ----------------------------
 const themeBtn = document.getElementById("themeToggle");
 
-themeBtn.addEventListener("click", function () {
+if(localStorage.getItem("theme") === "light"){
+    document.body.classList.add("light");
+    themeBtn.innerHTML="🌙 Dark Mode";
+}
+
+themeBtn.onclick = function(){
+
     document.body.classList.toggle("light");
 
-    if (document.body.classList.contains("light")) {
-        themeBtn.innerText = "🌙 Dark Mode";
-    } else {
-        themeBtn.innerText = "☀️ Light Mode";
+    if(document.body.classList.contains("light")){
+
+        localStorage.setItem("theme","light");
+        themeBtn.innerHTML="🌙 Dark Mode";
+
     }
+    else{
+
+        localStorage.setItem("theme","dark");
+        themeBtn.innerHTML="☀️ Light Mode";
+
+    }
+
+}
+
+// ----------------------------
+// Time Function
+// ----------------------------
+
+function getTime(){
+
+    const now = new Date();
+
+    return now.toLocaleTimeString([],{
+
+        hour:'2-digit',
+        minute:'2-digit'
+
+    });
+
+}
+
+// ----------------------------
+// Save Chats
+// ----------------------------
+
+function saveChats(){
+
+    localStorage.setItem("groqChats",JSON.stringify(chats));
+
+}
+
+// ----------------------------
+// Render History
+// ----------------------------
+
+function renderHistory(){
+
+    const history=document.getElementById("chat-history");
+
+    history.innerHTML="";
+
+    chats.forEach((chat,index)=>{
+
+        let div=document.createElement("div");
+
+        div.className="history-item";
+
+        div.innerHTML=chat.title;
+
+        div.onclick=()=>loadChat(index);
+
+        history.appendChild(div);
+
+    });
+
+}
+
+// ----------------------------
+// Load Chat
+// ----------------------------
+
+function loadChat(index){
+
+    currentChat=chats[index].messages;
+
+    const chatBox=document.getElementById("chat-box");
+
+    chatBox.innerHTML="";
+
+    currentChat.forEach(msg=>{
+
+        let copyButton="";
+
+        if(msg.role=="bot"){
+
+            copyButton=
+            `<br>
+            <button
+            class="copy-btn"
+            onclick="copyText(this)">
+            Copy
+            </button>`;
+
+        }
+
+        chatBox.innerHTML+=`
+
+        <div class="message ${msg.role}">
+
+        ${msg.text}
+
+        ${copyButton}
+
+        <div class="time">
+
+        ${msg.time}
+
+        </div>
+
+        </div>
+
+        `;
+
+    });
+
+    chatBox.scrollTop=chatBox.scrollHeight;
+
+}
+
+// ----------------------------
+// New Chat
+// ----------------------------
+
+function newChat(){
+
+    currentChat=[];
+
+    document.getElementById("chat-box").innerHTML=
+
+    `<div class="welcome">
+
+    Ask me anything ✨
+
+    </div>`;
+
+}
+
+// ----------------------------
+// Clear Chats
+// ----------------------------
+
+function clearAllChats(){
+
+    if(!confirm("Delete all chats?"))
+        return;
+
+    chats=[];
+
+    currentChat=[];
+
+    saveChats();
+
+    renderHistory();
+
+    newChat();
+
+}
+
+// ----------------------------
+// Copy AI Message
+// ----------------------------
+
+function copyText(button){
+
+    let text=
+
+    button.parentElement.childNodes[0].textContent.trim();
+
+    navigator.clipboard.writeText(text);
+
+    button.innerHTML="Copied ✓";
+
+    setTimeout(()=>{
+
+        button.innerHTML="Copy";
+
+    },1500);
+
+}
+
+// ----------------------------
+// Add Message
+// ----------------------------
+
+function addMessage(role,text){
+
+    const chatBox=document.getElementById("chat-box");
+
+    if(chatBox.innerHTML.includes("Ask me anything")){
+
+        chatBox.innerHTML="";
+
+    }
+
+    let copy="";
+
+    if(role=="bot"){
+
+        copy=
+
+        `<br>
+
+        <button
+        class="copy-btn"
+        onclick="copyText(this)">
+        Copy
+        </button>`;
+
+    }
+
+    const time=getTime();
+
+    chatBox.innerHTML+=`
+
+    <div class="message ${role}">
+
+    ${text}
+
+    ${copy}
+
+    <div class="time">
+
+    ${time}
+
+    </div>
+
+    </div>
+
+    `;
+
+    currentChat.push({
+
+        role:role,
+
+        text:text,
+
+        time:time
+
+    });
+
+    chatBox.scrollTop=chatBox.scrollHeight;
+
+}
+    // ----------------------------
+// Generate Response
+// ----------------------------
+
+async function generate() {
+
+    const input = document.getElementById("prompt");
+    const prompt = input.value.trim();
+
+    if (!prompt) return;
+
+    addMessage("user", prompt);
+
+    input.value = "";
+
+    const chatBox = document.getElementById("chat-box");
+
+    // Loading message
+    chatBox.innerHTML += `
+        <div class="message bot" id="loading">
+            Thinking...
+            <div class="time">${getTime()}</div>
+        </div>
+    `;
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+
+        const response = await fetch("http://127.0.0.1:8000/generate", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                prompt: prompt
+            })
+
+        });
+
+        const data = await response.json();
+
+        document.getElementById("loading").remove();
+
+        addMessage("bot", data.response);
+
+        if (currentChat.length == 2) {
+
+            chats.push({
+
+                title: prompt.substring(0, 25) + "...",
+
+                messages: [...currentChat]
+
+            });
+
+        }
+
+        else {
+
+            chats[chats.length - 1].messages = [...currentChat];
+
+        }
+
+        saveChats();
+
+        renderHistory();
+
+    }
+
+    catch (err) {
+
+        document.getElementById("loading").remove();
+
+        addMessage("bot", "Error connecting to FastAPI server.");
+
+    }
+
+}
+
+// ----------------------------
+// Enter to Send
+// Shift + Enter = New Line
+// ----------------------------
+
+document.getElementById("prompt")
+
+.addEventListener("keydown", function(e){
+
+    if(e.key==="Enter" && !e.shiftKey){
+
+        e.preventDefault();
+
+        generate();
+
+    }
+
 });
+
+// ----------------------------
+// Initial Render
+// ----------------------------
 
 renderHistory();
-
-document.getElementById("prompt").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") generate();
-});
 </script>
 
 </body>
