@@ -1,78 +1,96 @@
 # FastAPI Groq Chatbot
 
-A full-stack AI chatbot application powered by FastAPI and Groq's Llama 3.3 model, featuring a clean ChatGPT-style interface, conversation history, and a built-in Dark/Light theme.
+A simple AI chatbot built using FastAPI and Groq's Llama 3.3 model. The application provides a ChatGPT-style interface with chat history, dark/light mode, and a responsive user interface.
 
 ## Features
 
 - FastAPI backend
-- Groq API integration using Llama 3.3
-- ChatGPT-style responsive interface
-- Chat history support
-- Secure API key handling with `.env`
-- Dark/Light theme toggle
-- Clean and modern user interface
+- Groq API integration
+- ChatGPT-style interface
+- Chat history
+- New chat option
+- Clear chat history
+- Dark/Light theme
+- Message timestamps
+- Copy AI responses
+- Responsive design
+- Secure API key management using `.env`
+
+## Technologies Used
+
+- Python
+- FastAPI
+- Groq API
+- HTML
+- CSS
+- JavaScript
 
 ## Installation
 
-1. Clone the repository:
+Clone the repository:
 
 ```bash
-git clone <your-repository-url>
-cd <your-project-folder>
+git clone https://github.com/Joel-VG/fastapi_chatbot.git
+cd fastapi_chatbot
 ```
 
-2. Install the required dependencies:
+Install the required packages:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Create a `.env` file in the project directory and add your Groq API key:
+Create a `.env` file and add your Groq API key:
 
 ```env
 GROQ_API_KEY=your_api_key_here
 ```
 
-## Run
+## Running the Project
 
-Start the FastAPI development server:
+Start the FastAPI server:
 
 ```bash
 fastapi dev project.py
 ```
 
-Then open your browser and navigate to the local URL displayed in the terminal (typically `http://127.0.0.1:8000`).
+Open your browser and go to:
 
-## Usage
-
-1. Launch the application.
-2. Enter your message in the chat box.
-3. Receive AI-generated responses powered by Groq's Llama 3.3 model.
-4. View previous messages in the chat history.
-5. Click the **Dark/Light Theme** button to switch between dark and light modes.
+```
+http://127.0.0.1:8000
+```
 
 ## Project Structure
 
-```text
-.
+```
+fastapi_chatbot/
+│
+├── static/
+│   └── index.html
 ├── project.py
 ├── requirements.txt
 ├── .env
-├── templates/
-├── static/
+├── .gitignore
 └── README.md
 ```
 
-## Technologies Used
+## Usage
 
-- FastAPI
-- Python
-- Groq API
-- Llama 3.3
-- HTML
-- CSS
-- JavaScript
+1. Run the FastAPI server.
+2. Open the application in your browser.
+3. Enter a message and click **Send**.
+4. Use **New Chat** to start a new conversation.
+5. Use **Clear Chats** to remove saved chat history.
+6. Switch between **Dark** and **Light** mode using the theme button.
 
-## License
+## Future Improvements
 
-This project is intended for educational and personal learning purposes.
+- Conversation memory
+- Streaming responses
+- Voice input
+- File upload support
+- User authentication
+
+## Author
+
+Joel George
