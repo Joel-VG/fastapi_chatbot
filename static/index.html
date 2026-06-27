@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Groq AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #111827);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .new-chat {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .history-item {
+            background: rgba(255,255,255,0.08);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            word-wrap: break-word;
+        }
+
+        .history-item:hover {
+            background: rgba(255,255,255,0.18);
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            color: white;
+            text-align: center;
+            padding: 25px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .message {
+            max-width: 75%;
+            margin-bottom: 20px;
+            padding: 18px;
+            border-radius: 18px;
+            line-height: 1.6;
+        }
+
+        .user {
+            margin-left: auto;
+            color: white;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+        }
+
+        .bot {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .input-wrapper {
+            padding: 25px;
+        }
+
+        .input-box {
+            display: flex;
+            background: rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 12px;
+        }
+
+        #prompt {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            padding: 12px;
+        }
+
+        .send-btn {
+            border: none;
+            padding: 14px 22px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            cursor: pointer;
+        }
+
+        .welcome {
+            text-align: center;
+            color: #cbd5e1;
+            margin-top: 120px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="logo">🤖 Groq AI</div>
+    <button class="new-chat" onclick="newChat()">+ New Chat</button>
+    <div id="chat-history"></div>
+</div>
+
+<div class="chat-area">
+    <div class="header">AI Assistant</div>
+
+    <div id="chat-box">
+        <div class="welcome">Ask me anything ✨</div>
+    </div>
+
+    <div class="input-wrapper">
+        <div class="input-box">
+            <input id="prompt" placeholder="Message AI..." />
+            <button class="send-btn" onclick="generate()">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let chats = JSON.parse(localStorage.getItem("groqChats")) || [];
+let currentChat = [];
+
+function saveChats() {
+    localStorage.setItem("groqChats", JSON.stringify(chats));
+}
+
+function renderHistory() {
+    const history = document.getElementById("chat-history");
+    history.innerHTML = "";
+
+    chats.forEach((chat, index) => {
+        const item = document.createElement("div");
+        item.className = "history-item";
+        item.innerText = chat.title;
+        item.onclick = () => loadChat(index);
+        history.appendChild(item);
+    });
+}
+
+function loadChat(index) {
+    currentChat = chats[index].messages;
+    const chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML = "";
+
+    currentChat.forEach(msg => {
+        chatBox.innerHTML += `<div class="message ${msg.role}">${msg.text}</div>`;
+    });
+}
+
+function newChat() {
+    currentChat = [];
+    document.getElementById("chat-box").innerHTML =
+        '<div class="welcome">Ask me anything ✨</div>';
+}
+
+async function generate() {
+    const input = document.getElementById("prompt");
+    const prompt = input.value;
+    const chatBox = document.getElementById("chat-box");
+
+    if (!prompt.trim()) return;
+
+    if (chatBox.innerHTML.includes("Ask me anything")) {
+        chatBox.innerHTML = "";
+    }
+
+    chatBox.innerHTML += `<div class="message user">${prompt}</div>`;
+    currentChat.push({ role: "user", text: prompt });
+    input.value = "";
+
+    chatBox.innerHTML += `<div class="message bot" id="loading">Thinking...</div>`;
+
+    const response = await fetch("http://127.0.0.1:8000/generate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt: prompt })
+    });
+
+    const data = await response.json();
+
+    document.getElementById("loading").remove();
+    chatBox.innerHTML += `<div class="message bot">${data.response}</div>`;
+    currentChat.push({ role: "bot", text: data.response });
+
+    if (currentChat.length === 2) {
+        chats.push({
+            title: prompt.substring(0, 25) + "...",
+            messages: [...currentChat]
+        });
+    } else {
+        chats[chats.length - 1].messages = [...currentChat];
+    }
+
+    saveChats();
+    renderHistory();
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+renderHistory();
+
+document.getElementById("prompt").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") generate();
+});
+</script>
+
+</body>
+</html>
