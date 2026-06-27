@@ -14,6 +14,7 @@
             height: 100vh;
             display: flex;
             background: linear-gradient(135deg, #0f172a, #1e293b, #111827);
+            transition: 0.3s;
         }
 
         .sidebar {
@@ -22,6 +23,7 @@
             color: white;
             padding: 20px;
             overflow-y: auto;
+            transition: 0.3s;
         }
 
         .logo {
@@ -66,6 +68,7 @@
             padding: 25px;
             font-size: 28px;
             font-weight: bold;
+            transition: 0.3s;
         }
 
         #chat-box {
@@ -91,6 +94,7 @@
         .bot {
             color: white;
             background: rgba(255,255,255,0.1);
+            transition: 0.3s;
         }
 
         .input-wrapper {
@@ -102,6 +106,7 @@
             background: rgba(255,255,255,0.08);
             border-radius: 20px;
             padding: 12px;
+            transition: 0.3s;
         }
 
         #prompt {
@@ -112,6 +117,7 @@
             font-size: 16px;
             outline: none;
             padding: 12px;
+            transition: 0.3s;
         }
 
         .send-btn {
@@ -128,6 +134,47 @@
             color: #cbd5e1;
             margin-top: 120px;
             font-size: 24px;
+            transition: 0.3s;
+        }
+
+        /* LIGHT MODE */
+        body.light {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        }
+
+        body.light .sidebar {
+            background: rgba(255,255,255,0.95);
+            color: black;
+        }
+
+        body.light .header {
+            color: black;
+        }
+
+        body.light .welcome {
+            color: #334155;
+        }
+
+        body.light .history-item {
+            background: rgba(0,0,0,0.08);
+            color: black;
+        }
+
+        body.light .history-item:hover {
+            background: rgba(0,0,0,0.15);
+        }
+
+        body.light .input-box {
+            background: rgba(0,0,0,0.08);
+        }
+
+        body.light #prompt {
+            color: black;
+        }
+
+        body.light .bot {
+            background: rgba(0,0,0,0.08);
+            color: black;
         }
     </style>
 </head>
@@ -135,6 +182,7 @@
 
 <div class="sidebar">
     <div class="logo">🤖 Groq AI</div>
+    <button id="themeToggle" class="new-chat">☀️ Light Mode</button>
     <button class="new-chat" onclick="newChat()">+ New Chat</button>
     <div id="chat-history"></div>
 </div>
@@ -235,6 +283,18 @@ async function generate() {
     renderHistory();
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
+const themeBtn = document.getElementById("themeToggle");
+
+themeBtn.addEventListener("click", function () {
+    document.body.classList.toggle("light");
+
+    if (document.body.classList.contains("light")) {
+        themeBtn.innerText = "🌙 Dark Mode";
+    } else {
+        themeBtn.innerText = "☀️ Light Mode";
+    }
+});
 
 renderHistory();
 
